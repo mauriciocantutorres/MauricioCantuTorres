@@ -1,5 +1,3 @@
-# Trabajo
+# Convolución y Padding
 
-En este repositorio subiré diferentes trabajos, sean para proyectos de una clase, o intereses personales.
-
-In this repository, I will upload different kinds of work, wether it is for class or personal interest.
+En este repositorio se muestra la implementación de convolución para aplicar un filtro sobre una imágen 2-D, a la vez que se aplica el padding para eliminar los bordes de la imagen.
