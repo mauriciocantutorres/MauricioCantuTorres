@@ -1,47 +1,41 @@
 import cv2
 import numpy as np
-kernel = np.array([[-1,-1,-1], [-1,8,-1], [-1,-1,-1]])
+kernel = np.array([[-1, -1, -1], [-1, 8, -1], [-1, -1, -1]])
 
-def procesarImagen(imagen):
-    imagen = cv2.imread(imagen, 0)
-    return imagen
+def convolucion(imagen, kernel, padding=0, salto=1):
 
-def convolucion(imagen, kernel, padding=0):
+    xKernel = kernel.shape[0]
+    yKernel = kernel.shape[1]
+    xImagen = imagen.shape[0]
+    yImagen = imagen.shape[1]
 
-    kernel = np.flipud(np.fliplr(kernel))
-
-    x_kernel = kernel.shape[0]
-    y_kernel = kernel.shape[1]
-    x_imagen = imagen.shape[0]
-    y_imagen = imagen.shape[1]
-
-    x_size = int(((x_imagen - x_kernel + 2 * padding)/1)+1)
-    y_size = int(((y_imagen - y_kernel + 2 * padding)/1)+1)
-
-    img = np.zeros((x_size,y_size))
+    xfinal = int(((xImagen - xKernel + 2 * padding) / salto) + 1)
+    yfinal = int(((yImagen - yKernel + 2 * padding) / salto) + 1)
+    img_final = np.zeros((xfinal, yfinal))
 
     if padding != 0:
-        padded_img = np.zeros((x_imagen + padding * 2, y_imagen + padding * 2))
-        padded_img[int(padding):int(-1 * padding), int(padding):int(-1 * padding)] = imagen
+        padded = np.zeros((imagen.shape[0] + padding*2, imagen.shape[1] + padding*2))
+        padded[int(padding):int(-1 * padding), int(padding):int(-1 * padding)] = imagen
     else:
-        padded_img = imagen
+        padded = imagen
 
-    for i in range (y_imagen):
-        if i > y_imagen - y_kernel:
+    for i in range(imagen.shape[1]):
+        if i > imagen.shape[1] - yKernel:
             break
-            if i % 1 == 0:
-                for j in range (x_imagen):
-                    if j > x_imagen - x_kernel:
-                        break
-                        if j % 1 == 0:
-                            img[j,i] = (kernel * padded_img[x: x + x_kernel, y: y + y_kernel]).sum()
-                        else:
-                            break
-    return img
+        if i % salto == 0:
+            for j in range(imagen.shape[0]):
+                if j > imagen.shape[0] - xKernel:
+                    break
+                try:
+                    if j % salto == 0:
+                        img_final[j, i] = (kernel * padded[j: j + xKernel, i: i + yKernel]).sum()
+                except:
+                    break
 
-    #main
+    return img_final
 
-    imagenFinal = procesarImagen("ejemplo.jpeg")
+imagen = cv2.imread("home.jpg",0)
 
-    img_conv = convolucion(imagenFinal, kernel)
-    cv2.imshow("imagen", imagenFinal)
+final = convolucion(imagen, kernel, padding=5)
+cv2.imshow("Imagen final", final)
+cv2.waitKey(0)
